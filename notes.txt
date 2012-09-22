@@ -1,0 +1,6 @@
+Class Notes
+===========
+
+Structured Query Languages (SQL) were invented in 1970's and it was way before
+the invention of WWW.
+
