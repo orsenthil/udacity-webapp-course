@@ -4,3 +4,17 @@ Class Notes
 Structured Query Languages (SQL) were invented in 1970's and it was way before
 the invention of WWW.
 
+Google App Engine.
+
+Entities are like tables whose columns are not fixed.
+
+Tables -> Entities
+            -> Columns are not fixed.
+            -> All have an ID.
+            -> have a notion of parents/ ancestors.
+                (Reddit -> Link)
+SQL -> GQL
+    -> All queries being with select * (no queries begin with individual columns)
+Run arbitrary query -> All queries must be indexed.
+
+Datastore is sharded and replicated.
