@@ -18,3 +18,15 @@ SQL -> GQL
 Run arbitrary query -> All queries must be indexed.
 
 Datastore is sharded and replicated.
+
+Datastore types include string and text, the difference being, the string type
+has to be under 500 characters and it is index and text type can have more than
+500 characters.
+
+In database terminology, cursor is nothing but a pointer to the result.
+
+HTML
+----
+
+classes are how we attach css styles to things.
+
