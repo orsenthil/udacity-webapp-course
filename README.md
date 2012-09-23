@@ -19,10 +19,14 @@ App Engine
 App URLS
 --------
 
-* http://bloglikeapp.appspot.com 
-* http://bloglikeapp.appspot.com/unit2
-* http://bloglikeapp.appspot.com/unit2/signup
+* http://1.bloglikeapp.appspot.com 
+* http://1.bloglikeapp.appspot.com/unit2
+* http://1.bloglikeapp.appspot.com/unit2/signup
 
+Ascii Chan
+----------
+
+* http://3.bloglikeapp.appspot.com
 
 
 - - -
@@ -33,4 +37,8 @@ Changelog
 *Sat Sep 22 08:09:52 PDT 2012*
 
 * Created the initial project repo with contents till Unit 2.
+
+*Sun Sep 23 12:49:45 PDT 2012*
+
+* Ascii Chan
 
