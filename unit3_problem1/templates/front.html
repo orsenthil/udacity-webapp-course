@@ -9,9 +9,9 @@
         <hr>
         {% for post in allposts %}
             <div class="blogpost">
-                <div class="blog-title">{{post.title}}</div>
-                <div class="blog-post">{{post.post}}</div>
-                <div class="blog-permalink"><a href="/{{post.created}}">{{post.created}}</a></div>
+                <div class="blog-title">{{post.topic}}</div><br/>
+                <div class="blog-post">{{post.post}}</div><br/>
+                <div class="blog-permalink"><a href="/{{post.permalink}}">{{post.permalink}}</a></div><br/>
             </div>
         {%endfor%}
     </body>

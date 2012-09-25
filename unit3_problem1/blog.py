@@ -1,6 +1,7 @@
 import webapp2
 import jinja2
 import os
+import datetime
 
 from google.appengine.ext import db
 
@@ -11,6 +12,7 @@ jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir),
 class BlogPost(db.Model):
     topic = db.StringProperty(required=True)
     post = db.TextProperty(required=True)
+    permalink = db.StringProperty(required=True)
     created = db.DateTimeProperty(auto_now_add=True)
 
 class Handler(webapp2.RequestHandler):
@@ -26,7 +28,7 @@ class Handler(webapp2.RequestHandler):
         self.write(self.render_str(template, **kwargs))
 
 class BlogMainPageHandler(Handler):
-    def render_front_page(self):
+    def render_front_page(self, **kwargs):
         self.render("front.html", **kwargs)
 
     def get(self):
@@ -46,7 +48,8 @@ class SubmitNewEntry(Handler):
         post = self.request.get("post")
 
         if topic and post:
-            b = BlogPost(topic=topic, post=post)
+            permalink = datetime.datetime.strftime(datetime.datetime.now(),"%Y%M%d%H%M%S")
+            b = BlogPost(topic=topic, post=post, permalink=permalink)
             b.put()
             self.redirect("/")
         else:
@@ -57,9 +60,10 @@ class PermaLinkEntryHandler(Handler):
     def render_blog_post(self, **kwargs):
         self.render("blog.html", **kwargs)
 
-    def get(self, blogid):
-        # Gql for get blog post by id.
-        self.render_blog_post(topic=topic, post=post)
+    def get(self, postid):
+        posts = db.GqlQuery("SELECT * from BlogPost WHERE permalink = :permalink", permalink=postid)
+        post = posts.get()
+        self.render_blog_post(topic=post.topic, post=post.post)
 
 app = webapp2.WSGIApplication([('/', BlogMainPageHandler),
                                ('/submit', SubmitNewEntry),
