@@ -54,14 +54,14 @@
 
     <body>
         <h1> What are you thinking?</h1>
-        <form method="POST" action="/submit">
+        <form method="POST" action="/newpost">
             <label>
                 <div>Topic</title>
-                <input type="text" name="topic" value="{{topic}}" />
+                <input type="text" name="subject" value="{{topic}}" />
             </label>
             <label>
                 <div>Post</div>
-                <textarea name="post">{{post}}</textarea>
+                <textarea name="content">{{post}}</textarea>
             </label>
             <div class="error">{{error}}</div>
             <input type="SUBMIT"/>

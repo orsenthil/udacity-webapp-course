@@ -44,8 +44,8 @@ class SubmitNewEntry(Handler):
         self.render_submit(topic="", post="", error="")
 
     def post(self, *args, **kwargs):
-        topic = self.request.get("topic")
-        post = self.request.get("post")
+        topic = self.request.get("subject")
+        post = self.request.get("content")
 
         if topic and post:
             permalink = datetime.datetime.strftime(datetime.datetime.now(),"%Y%M%d%H%M%S")
@@ -66,5 +66,5 @@ class PermaLinkEntryHandler(Handler):
         self.render_blog_post(topic=post.topic, post=post.post)
 
 app = webapp2.WSGIApplication([('/', BlogMainPageHandler),
-                               ('/submit', SubmitNewEntry),
+                               ('/newpost', SubmitNewEntry),
                                ('/(\d+)', PermaLinkEntryHandler)], debug=True)
