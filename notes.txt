@@ -37,3 +37,8 @@ Assignment Unit 3
 * Front page which lists 10 most recent entries.
 * A form to submit the entry.
 * A perma link to each entry. - An idea for perma link is to hash the createdtime to an int and use that.
+
+What is a parent key in Google App Engine?
+
+def blog_key(name="default"):
+    return db.Key.from_path("blogs", name)
