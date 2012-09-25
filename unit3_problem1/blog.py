@@ -61,8 +61,9 @@ class PermaLinkEntryHandler(Handler):
         self.render("blog.html", **kwargs)
 
     def get(self, postid):
-        posts = db.GqlQuery("SELECT * from BlogPost WHERE permalink = :permalink", permalink=postid)
-        post = posts.get()
+        post = BlogPost.get_by_id(int(postid))
+        #posts = db.GqlQuery("SELECT * from BlogPost WHERE ID = :postid", postid=postid)
+        #post = posts.get()
         self.render_blog_post(topic=post.topic, post=post.post)
 
 app = webapp2.WSGIApplication([('/', BlogMainPageHandler),

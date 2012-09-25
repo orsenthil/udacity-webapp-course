@@ -60,7 +60,7 @@
             <div class="blogpost">
                 <div class="blog-topic">{{post.topic}}</div><br/>
                 <div class="blog-post">{{post.post}}</div><br/>
-                <div class="blog-permalink"><a href="/{{post.permalink}}">permalink</a></div><br/>
+                <div class="blog-permalink"><a href="/{{post.key().id()}}">permalink</a></div><br/>
             </div>
         {%endfor%}
     </body>
