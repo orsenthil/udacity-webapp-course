@@ -1,0 +1,18 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title> Blog </title>
+    </head>
+    <body>
+        <h1> All is well</h1>
+        <a href="/submit">New Post</a>
+        <hr>
+        {% for post in allposts %}
+            <div class="blogpost">
+                <div class="blog-title">{{post.title}}</div>
+                <div class="blog-post">{{post.post}}</div>
+                <div class="blog-permalink">{{post.permalink}}</div>
+            </div>
+        {%endfor%}
+    </body>
+</html>

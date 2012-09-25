@@ -30,3 +30,10 @@ HTML
 
 classes are how we attach css styles to things.
 
+Assignment Unit 3
+-----------------
+
+* Build a Blog
+* Front page which lists 10 most recent entries.
+* A form to submit the entry.
+* A perma link to each entry. - An idea for perma link is to hash the createdtime to an int and use that.
