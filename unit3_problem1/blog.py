@@ -9,7 +9,7 @@ jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir),
                               autoescape=True)
 
 class BlogPost(db.Model):
-    title = db.StringProperty(required=True)
+    topic = db.StringProperty(required=True)
     post = db.TextProperty(required=True)
     created = db.DateTimeProperty(auto_now_add=True)
 
@@ -27,24 +27,39 @@ class Handler(webapp2.RequestHandler):
 
 class BlogMainPageHandler(Handler):
     def render_front_page(self):
-        self.render("front.html")
+        self.render("front.html", **kwargs)
 
     def get(self):
-        self.render_front_page()
+        # Gql for all the blog entries.
+        allposts = db.GqlQuery("SELECT * FROM BlogPost ORDER BY created desc;")
+        self.render_front_page(allposts=allposts)
 
 class SubmitNewEntry(Handler):
-    def render_submit(self):
-        self.render("submit.html")
+    def render_submit(self, **kwargs):
+        self.render("submit.html", **kwargs)
 
     def get(self):
-        self.render_submit()
+        self.render_submit(topic="", post="", error="")
+
+    def post(self, *args, **kwargs):
+        topic = self.request.get("topic")
+        post = self.request.get("post")
+
+        if topic and post:
+            b = BlogPost(topic=topic, post=post)
+            b.put()
+            self.redirect("/")
+        else:
+            error = "Please provide title and post"
+            self.render_submit(topic=topic, post=post, error=error)
 
 class PermaLinkEntryHandler(Handler):
-    def render_blog_post(self):
-        self.render("blog.html")
+    def render_blog_post(self, **kwargs):
+        self.render("blog.html", **kwargs)
 
-    def get(self):
-        self.render_blog_post()
+    def get(self, blogid):
+        # Gql for get blog post by id.
+        self.render_blog_post(topic=topic, post=post)
 
 app = webapp2.WSGIApplication([('/', BlogMainPageHandler),
                                ('/submit', SubmitNewEntry),

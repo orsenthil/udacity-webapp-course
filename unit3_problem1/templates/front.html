@@ -11,7 +11,7 @@
             <div class="blogpost">
                 <div class="blog-title">{{post.title}}</div>
                 <div class="blog-post">{{post.post}}</div>
-                <div class="blog-permalink">{{post.permalink}}</div>
+                <div class="blog-permalink"><a href="/{{post.created}}">{{post.created}}</a></div>
             </div>
         {%endfor%}
     </body>
