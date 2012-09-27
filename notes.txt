@@ -42,3 +42,19 @@ What is a parent key in Google App Engine?
 
 def blog_key(name="default"):
     return db.Key.from_path("blogs", name)
+
+Unit 4
+------
+
+There is something about cookies.
+
+visits = self.request.cookies.get("visits", 0)
+
+The difference between using add_header and then using headers as a dictionary
+is, if you use headers as a dictionary, the next item can overwrite it. We do
+not want that happen.
+
+And in headers, it is important to remember that multiple headers can have the
+same name.
+
+bcrypt is the best hash function out there.
