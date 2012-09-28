@@ -1,39 +1,17 @@
 #!/usr/bin/env python
 
 import webapp2
+import jinja2
+import os
 import cgi
 import re
 import hashlib
 
-form2 = """
-<html>
-<h2>User Signup Page</h2>
-<form method="post" action="/blog/signup">
-<label>
-Name:
-<input type="text" name="username" value="%(username)s">
-<div style="color: red">%(username_error)s</div>
-</label>
-<label>
-Password:
-<input type="password" name="password" value="">
-<div style="color: red">%(password_error)s</div>
-</label>
-<label>
-Verify Password:
-<input type="password" name="verify" value="">
-<div style="color: red">%(verify_password_error)s</div>
-</label>
-<label>
-Email:
-<input type="text" name="email" value="%(email)s">
-<div style="color: red">%(email_error)s</div>
-</label>
-<input type="submit">
-</form>
+from google.appengine.ext import db
 
-</html>
-"""
+template_dir = os.path.join(os.path.dirname(__file__), 'templates')
+jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir),
+                               autoescape=True)
 
 def verify_username(username):
     USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
@@ -47,19 +25,19 @@ def verify_email(email):
     USER_EMAIL = re.compile(r"^[\S]+@[\S]+\.[\S]+$")
     return USER_EMAIL.match(email)
 
-class MainHandler(webapp2.RequestHandler):
+class Handler(webapp2.RequestHandler):
 
-    def get(self):
-        self.response.out.write('Hello world!')
+    def write(self, *args, **kwargs):
+        self.response.out.write(*args, **kwargs)
 
+    def render_str(self, template, **params):
+        t = jinja_env.get_template(template)
+        return t.render(params)
 
-class RotHandler(webapp2.RequestHandler):
+    def render(self, template, **kwargs):
+        self.write(self.render_str(template, **kwargs))
 
-    def get(self, content=""):
-        self.response.out.write("Hello, World2!")
-
-
-class UserHandler(webapp2.RequestHandler):
+class MainHandler(Handler):
 
     def write_form(self, email_error="",
                          email="",
@@ -75,13 +53,12 @@ class UserHandler(webapp2.RequestHandler):
                          'username_error': username_error,
                          'username': username
                         }
-        self.response.out.write(form2 % form_contents)
+        self.render('form.html', **form_contents)
 
     def get(self):
         self.write_form(email_error="", email="",
                    verify_password_error="", password_error="",
                    username_error="", username="")
-
 
     def post(self):
         username = self.request.get('username')
@@ -95,13 +72,7 @@ class UserHandler(webapp2.RequestHandler):
             verify_password(verify) and  password == verify and \
             (verify_email(email) or email == "")):
 
-            redirect_url = "/welcome"
-            salt = 'salty'
-            pw_hash = username + ',' + hashlib.sha256(username+password+salt).hexdigest()
-            cookie_value = 'userid=%s' % pw_hash
-            cookie_value = cookie_value.encode('utf-8')
-            self.response.headers.add_header('Set-Cookie', cookie_value)
-
+            redirect_url = "/welcome?q=" + username
             self.redirect(redirect_url)
         else:
             if not verify_username(username):
@@ -132,16 +103,9 @@ class UserHandler(webapp2.RequestHandler):
 class WelcomeHandler(webapp2.RequestHandler):
 
     def get(self):
-        username = self.request.cookies.get("userid", 20)
-        self.response.out.write(username)
-        if not username:
-            self.redirect('/blog/signup')
-        #username = username.split(',')[0]
+        username = self.request.get("q")
         output = "Welcome, %s" % username
         self.response.out.write(output)
 
 app = webapp2.WSGIApplication([('/', MainHandler),
-                               ('/blog', RotHandler),
-                               ('/blog/signup', UserHandler),
-                               ('/welcome', WelcomeHandler),],
-                              debug=True)
+                               ('/welcome', WelcomeHandler)], debug=True)
