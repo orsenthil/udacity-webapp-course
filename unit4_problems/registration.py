@@ -72,7 +72,11 @@ class MainHandler(Handler):
             verify_password(verify) and  password == verify and \
             (verify_email(email) or email == "")):
 
-            redirect_url = "/welcome?q=" + username
+            password = hashlib.sha256(password + 'salt').hexdigest()
+            usercookie = 'userid=%s,%s' %(username, password)
+            usercookie = usercookie.encode('utf-8')
+            self.response.headers.add_header('Set-Cookie', usercookie, Path='/')
+            redirect_url = "/welcome"
             self.redirect(redirect_url)
         else:
             if not verify_username(username):
@@ -103,9 +107,15 @@ class MainHandler(Handler):
 class WelcomeHandler(webapp2.RequestHandler):
 
     def get(self):
-        username = self.request.get("q")
+        username = self.request.cookies.get("userid")
+        username = username.split(',')[0]
         output = "Welcome, %s" % username
         self.response.out.write(output)
 
-app = webapp2.WSGIApplication([('/', MainHandler),
-                               ('/welcome', WelcomeHandler)], debug=True)
+class HelloHandler(Handler):
+    def get(self):
+        self.write("hello,world")
+
+app = webapp2.WSGIApplication([('/signup', MainHandler),
+                               ('/welcome', WelcomeHandler),
+                               ('/', HelloHandler)], debug=True)
