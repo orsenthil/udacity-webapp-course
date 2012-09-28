@@ -151,11 +151,21 @@ class LoginHandler(Handler):
             self.write_form(login_error=login_error,
                             username=username)
 
+class LogoutHandler(Handler):
+    def get(self):
+        usercookie = 'userid='
+        usercookie = usercookie.encode('utf-8')
+        self.response.headers.add_header('Set-Cookie', usercookie, Path='/')
+        redirect_url = "/signup"
+        self.redirect(redirect_url)
+
 class HelloHandler(Handler):
     def get(self):
         self.write("hello,world")
 
+
 app = webapp2.WSGIApplication([('/signup', MainHandler),
                                ('/welcome', WelcomeHandler),
                                ('/login', LoginHandler),
+                               ('/logout', LogoutHandler),
                                ('/', HelloHandler)], debug=True)
