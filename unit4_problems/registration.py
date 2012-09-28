@@ -112,10 +112,50 @@ class WelcomeHandler(webapp2.RequestHandler):
         output = "Welcome, %s" % username
         self.response.out.write(output)
 
+class LoginHandler(Handler):
+
+    def write_form(self, login_error="",
+                         username=""):
+
+        form_contents = {'login_error': login_error,
+                         'username': username
+                        }
+        self.render('login.html', **form_contents)
+
+    def get(self):
+        self.write_form(login_error="", username="")
+
+    def post(self):
+        username = self.request.get('username')
+        username = cgi.escape(username)
+        password = self.request.get('password')
+
+        if (verify_username(username) and verify_password(password)):
+            password = hashlib.sha256(password + 'salt').hexdigest()
+            usercookie = 'userid=%s,%s' %(username, password)
+            usercookie = usercookie.encode('utf-8')
+            self.response.headers.add_header('Set-Cookie', usercookie, Path='/')
+            redirect_url = "/welcome"
+            self.redirect(redirect_url)
+
+        else:
+            if not verify_username(username):
+                login_error = "Invalid Login"
+            else:
+                login_error = ""
+            if not verify_password(password):
+                login_error = "Invalid Login"
+            else:
+                login_error = ""
+
+            self.write_form(login_error=login_error,
+                            username=username)
+
 class HelloHandler(Handler):
     def get(self):
         self.write("hello,world")
 
 app = webapp2.WSGIApplication([('/signup', MainHandler),
                                ('/welcome', WelcomeHandler),
+                               ('/login', LoginHandler),
                                ('/', HelloHandler)], debug=True)
