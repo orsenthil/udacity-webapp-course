@@ -19,7 +19,7 @@ class Art(db.Model):
 IP_URL = "http://api.hostip.info/?ip="
 
 def get_coords(ip):
-    ip = "4.2.2.2" # Test URL
+    # ip = "4.2.2.2" # Test URL
     url = IP_URL + ip
     content = None
     try:
