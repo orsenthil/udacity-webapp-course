@@ -68,8 +68,6 @@ class MainPage(Handler):
         self.render("front.html", title=title, art=art, error=error, arts=arts, img_url=img_url)
 
     def get(self):
-        self.write(self.request.remote_addr)
-        self.write(repr(get_coords(self.request.remote_addr)))
         self.render_front()
 
     def post(self):
