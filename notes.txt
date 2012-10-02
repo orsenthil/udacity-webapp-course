@@ -58,3 +58,11 @@ And in headers, it is important to remember that multiple headers can have the
 same name.
 
 bcrypt is the best hash function out there.
+
+Unit 5
+------
+
+How hipmunk works.
+Use of json
+Use of xml.dom.minidom
+
