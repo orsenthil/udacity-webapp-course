@@ -2,6 +2,7 @@ import webapp2
 import jinja2
 import os
 import datetime
+import json
 
 from google.appengine.ext import db
 
@@ -198,11 +199,30 @@ class LogoutHandler(Handler):
 
 class PermaLinkJsonHandler(Handler):
     def get(self, postid):
-        self.write("hello,world")
+        post_entry = {}
+        post = BlogPost.get_by_id(int(postid))
+        post_entry['subject'] = post.topic
+        post_entry['content'] = post.post
+        post_entry['created'] = post.created.strftime('%a %d %b %H:%M:%S %Y')
+
+        self.response.headers['Content-Type'] = 'application/json; charset=UTF-8'
+        response_json = json.dumps(post_entry)
+        self.write(response_json)
 
 class MainPageJsonHandler(Handler):
     def get(self):
-        self.write("hello,world")
+        allposts = db.GqlQuery("SELECT * FROM BlogPost ORDER BY created desc;")
+        main_page_list = []
+        for post in allposts:
+            entry_dict = {}
+            entry_dict['subject'] = post.topic
+            entry_dict['content'] = post.post
+            entry_dict['created'] = post.created.strftime('%a %d %b %H:%M:%S %Y')
+            main_page_list.append(entry_dict)
+        self.response.headers['Content-Type'] = 'application/json; charset=UTF-8'
+        response_json = json.dumps(main_page_list)
+        self.write(response_json)
+
 
 app = webapp2.WSGIApplication([('/\.json', MainPageJsonHandler),
                                ('/', BlogMainPageHandler),
