@@ -22,6 +22,12 @@ App URLS
 * http://1.bloglikeapp.appspot.com 
 * http://1.bloglikeapp.appspot.com/unit2
 * http://1.bloglikeapp.appspot.com/unit2/signup
+* http://3.bloglikeapp.appspot.com 
+* http://4.bloglikeapp.appspot.com 
+* http://5.bloglikeapp.appspot.com 
+* http://6.bloglikeapp.appspot.com 
+* http://7.bloglikeapp.appspot.com 
+
 
 Ascii Chan
 ----------
@@ -33,6 +39,11 @@ Ascii Chan
 
 Changelog
 ---------
+
+*Tue Oct  2 21:27:57 PDT 2012*
+
+* Completed Unit 5
+
 
 *Sat Sep 22 08:09:52 PDT 2012*
 
