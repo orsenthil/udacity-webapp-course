@@ -30,10 +30,12 @@ def gets(key):
 # already in the cache. if cas_unique does not match the hash of the value in
 # the cache, don't set anything and return False.
 def cas(key, value, cas_unique):
-    for k in CACHE.keys():
-        if cas_unique == gets(k)[1]:
-            return set(key, value) # I fixed my python understanding here.
-    return False
+    r = gets(key)
+    if r:
+        if cas_unique == r[1]:
+            return set(key, value)
+        else:
+            return False
 
 print set('x', 1)
 #>>> True
@@ -55,8 +57,6 @@ print gets('x')
 print cas('x', 3, 0)
 #>>> False
 
-import pudb
-pudb.set_trace()
 print cas('x', 4, 6400019251)
 #>>> True
 
