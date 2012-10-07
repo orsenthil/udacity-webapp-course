@@ -66,3 +66,10 @@ How hipmunk works.
 Use of json
 Use of xml.dom.minidom
 
+Memcached - 
+
+Released in 2003. Every website in the world uses memcached.
+All memcached libraries are written with the notion that memcached will be
+running on multiple memcached machines.
+
+
