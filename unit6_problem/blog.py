@@ -14,6 +14,9 @@ template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir),
                               autoescape=True)
 
+query_time = datetime.datetime.now()
+post_query_time = datetime.datetime.now()
+
 class BlogPost(db.Model):
     topic = db.StringProperty(required=True)
     post = db.TextProperty(required=True)
@@ -32,12 +35,14 @@ class Handler(webapp2.RequestHandler):
         self.write(self.render_str(template, **kwargs))
 
 def get_all_posts():
+    global query_time
     key = "front"
     allposts = memcache.get(key)
     if allposts is None:
         allposts = db.GqlQuery("SELECT * FROM BlogPost ORDER BY created desc;")
+        query_time = datetime.datetime.now()
         memcache.set(key, allposts)
-    return allposts
+    return allposts, query_time
 
 class BlogMainPageHandler(Handler):
     def render_front_page(self, **kwargs):
@@ -45,13 +50,9 @@ class BlogMainPageHandler(Handler):
 
     def get(self):
         # Gql for all the blog entries.
-        allposts = get_all_posts()
-        if allposts:
-            latest = allposts[0]
-            time_delta = datetime.datetime.now() - latest.created
-            seconds = time_delta.seconds
-        else:
-            seconds = 0
+        allposts, query_time = get_all_posts()
+        time_delta = datetime.datetime.now() - query_time
+        seconds = time_delta.seconds
         self.render_front_page(allposts=allposts, seconds=seconds)
 
 class SubmitNewEntry(Handler):
@@ -62,12 +63,15 @@ class SubmitNewEntry(Handler):
         self.render_submit(topic="", post="", error="")
 
     def post(self, *args, **kwargs):
+        global query_time
+
         topic = self.request.get("subject")
         post = self.request.get("content")
 
         if topic and post:
             b = BlogPost(topic=topic, post=post)
             b.put()
+            query_time = datetime.datetime.now()
             self.redirect("/")
         else:
             error = "Please provide title and post"
@@ -78,8 +82,16 @@ class PermaLinkEntryHandler(Handler):
         self.render("blog.html", **kwargs)
 
     def get(self, postid):
-        post = BlogPost.get_by_id(int(postid))
-        self.render_blog_post(topic=post.topic, post=post.post)
+        global post_query_time
+        post = memcache.get(postid)
+        if post == None:
+            post = BlogPost.get_by_id(int(postid))
+            memcache.set(postid, post)
+            post_query_time = datetime.datetime.now()
+
+        time_delta = datetime.datetime.now() - post_query_time
+        seconds = time_delta.seconds
+        self.render_blog_post(topic=post.topic, post=post.post, seconds=seconds)
 
 def verify_username(username):
     USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
