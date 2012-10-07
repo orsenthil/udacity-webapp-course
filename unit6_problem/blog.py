@@ -253,6 +253,14 @@ class MainPageJsonHandler(Handler):
         response_json = json.dumps(main_page_list)
         self.write(response_json)
 
+class FlushHandler(Handler):
+    def get(self):
+        global query_time
+        global post_query_time
+        memcache.flush_all()
+        query_time = datetime.datetime.now()
+        post_query_time = datetime.datetime.now()
+        self.redirect('/')
 
 app = webapp2.WSGIApplication([('/\.json', MainPageJsonHandler),
                                ('/', BlogMainPageHandler),
@@ -262,5 +270,6 @@ app = webapp2.WSGIApplication([('/\.json', MainPageJsonHandler),
                                ('/signup', SignupHandler),
                                ('/welcome', WelcomeHandler),
                                ('/login', LoginHandler),
-                               ('/logout', LogoutHandler)
+                               ('/logout', LogoutHandler),
+                               ('/flush', FlushHandler)
                                ], debug=True)
