@@ -2,13 +2,11 @@ import webapp2
 import jinja2
 import os
 import datetime
-import json
 import cgi
 import hashlib
 import re
 
 from google.appengine.ext import db
-from google.appengine.api import memcache
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir),
@@ -17,9 +15,9 @@ jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir),
 query_time = datetime.datetime.now()
 post_query_time = datetime.datetime.now()
 
-class BlogPost(db.Model):
-    topic = db.StringProperty(required=True)
-    post = db.TextProperty(required=True)
+class WikiEntry(db.Model):
+    title = db.StringProperty(required=True)
+    content = db.TextProperty(required=True)
     created = db.DateTimeProperty(auto_now_add=True)
 
 class Handler(webapp2.RequestHandler):
@@ -34,27 +32,6 @@ class Handler(webapp2.RequestHandler):
     def render(self, template, **kwargs):
         self.write(self.render_str(template, **kwargs))
 
-def get_all_posts():
-    global query_time
-    key = "front"
-    allposts = memcache.get(key)
-    if allposts is None:
-        allposts = db.GqlQuery("SELECT * FROM BlogPost ORDER BY created desc;")
-        query_time = datetime.datetime.now()
-        memcache.set(key, allposts)
-    return allposts, query_time
-
-class BlogMainPageHandler(Handler):
-    def render_front_page(self, **kwargs):
-        self.render("front.html", **kwargs)
-
-    def get(self):
-        # Gql for all the blog entries.
-        allposts, query_time = get_all_posts()
-        time_delta = datetime.datetime.now() - query_time
-        seconds = time_delta.seconds
-        self.render_front_page(allposts=allposts, seconds=seconds)
-
 class SubmitNewEntry(Handler):
     def render_submit(self, **kwargs):
         self.render("submit.html", **kwargs)
@@ -63,35 +40,34 @@ class SubmitNewEntry(Handler):
         self.render_submit(topic="", post="", error="")
 
     def post(self, *args, **kwargs):
-        global query_time
+        title = self.request.get("title")
+        content = self.request.get("content")
 
-        topic = self.request.get("subject")
-        post = self.request.get("content")
-
-        if topic and post:
-            b = BlogPost(topic=topic, post=post)
+        if title and content:
+            b = WikiEntry(title=title, content=content)
             b.put()
-            query_time = datetime.datetime.now()
             self.redirect("/")
         else:
             error = "Please provide title and post"
-            self.render_submit(topic=topic, post=post, error=error)
+            self.render_submit(title=title, content=content, error=error)
 
-class PermaLinkEntryHandler(Handler):
-    def render_blog_post(self, **kwargs):
+class WikiPage(Handler):
+    def render_wiki_page(self, **kwargs):
         self.render("blog.html", **kwargs)
 
-    def get(self, postid):
-        global post_query_time
-        post = memcache.get(postid)
-        if post == None:
-            post = BlogPost.get_by_id(int(postid))
-            memcache.set(postid, post)
-            post_query_time = datetime.datetime.now()
+    def get(self, pagename):
+        # get the page by pagename
+        page = WikiEntry.get_by_id(pagename)
+        self.render_wiki_page(page=page.content)
 
-        time_delta = datetime.datetime.now() - post_query_time
-        seconds = time_delta.seconds
-        self.render_blog_post(topic=post.topic, post=post.post, seconds=seconds)
+class EditPage(Handler):
+    def render_wiki_page(self, **kwargs):
+        self.render("editblog.html", **kwargs)
+
+    def get(self, pagename):
+        # edit this page.
+        pass
+
 
 def verify_username(username):
     USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
@@ -105,7 +81,7 @@ def verify_email(email):
     USER_EMAIL = re.compile(r"^[\S]+@[\S]+\.[\S]+$")
     return USER_EMAIL.match(email)
 
-class SignupHandler(Handler):
+class Signup(Handler):
 
     def write_form(self, email_error="",
                          email="",
@@ -180,7 +156,7 @@ class WelcomeHandler(webapp2.RequestHandler):
         output = "Welcome, %s" % username
         self.response.out.write(output)
 
-class LoginHandler(Handler):
+class Login(Handler):
 
     def write_form(self, login_error="",
                          username=""):
@@ -219,7 +195,7 @@ class LoginHandler(Handler):
             self.write_form(login_error=login_error,
                             username=username)
 
-class LogoutHandler(Handler):
+class Logout(Handler):
     def get(self):
         usercookie = 'userid='
         usercookie = usercookie.encode('utf-8')
@@ -227,49 +203,13 @@ class LogoutHandler(Handler):
         redirect_url = "/signup"
         self.redirect(redirect_url)
 
-class PermaLinkJsonHandler(Handler):
-    def get(self, postid):
-        post_entry = {}
-        post = BlogPost.get_by_id(int(postid))
-        post_entry['subject'] = post.topic
-        post_entry['content'] = post.post
-        post_entry['created'] = post.created.strftime('%a %d %b %H:%M:%S %Y')
+PAGE_RE = r'(/(?:[a-zA-Z0-9_-]+/?)*)'
 
-        self.response.headers['Content-Type'] = 'application/json; charset=UTF-8'
-        response_json = json.dumps(post_entry)
-        self.write(response_json)
-
-class MainPageJsonHandler(Handler):
-    def get(self):
-        allposts = db.GqlQuery("SELECT * FROM BlogPost ORDER BY created desc;")
-        main_page_list = []
-        for post in allposts:
-            entry_dict = {}
-            entry_dict['subject'] = post.topic
-            entry_dict['content'] = post.post
-            entry_dict['created'] = post.created.strftime('%a %d %b %H:%M:%S %Y')
-            main_page_list.append(entry_dict)
-        self.response.headers['Content-Type'] = 'application/json; charset=UTF-8'
-        response_json = json.dumps(main_page_list)
-        self.write(response_json)
-
-class FlushHandler(Handler):
-    def get(self):
-        global query_time
-        global post_query_time
-        memcache.flush_all()
-        query_time = datetime.datetime.now()
-        post_query_time = datetime.datetime.now()
-        self.redirect('/')
-
-app = webapp2.WSGIApplication([('/\.json', MainPageJsonHandler),
-                               ('/', BlogMainPageHandler),
+app = webapp2.WSGIApplication([('/signup', Signup),
+                               ('/login', Login),
+                               ('/logout', Logout),
+                               ('/_edit' + PAGE_RE, EditPage),
+                               (PAGE_RE, WikiPage),
                                ('/newpost', SubmitNewEntry),
-                               ('/(\d+)\.json', PermaLinkJsonHandler),
-                               ('/(\d+)', PermaLinkEntryHandler),
-                               ('/signup', SignupHandler),
-                               ('/welcome', WelcomeHandler),
-                               ('/login', LoginHandler),
-                               ('/logout', LogoutHandler),
-                               ('/flush', FlushHandler)
+                              ('/welcome', WelcomeHandler),
                                ], debug=True)
