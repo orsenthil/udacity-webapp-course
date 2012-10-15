@@ -1,7 +1,6 @@
 import webapp2
 import jinja2
 import os
-import datetime
 import cgi
 import hashlib
 import re
@@ -12,25 +11,23 @@ template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir),
                               autoescape=True)
 
-query_time = datetime.datetime.now()
-post_query_time = datetime.datetime.now()
-
 class WikiEntry(db.Model):
     title = db.StringProperty(required=True)
     content = db.TextProperty(required=True)
     created = db.DateTimeProperty(auto_now_add=True)
 
+
 class Handler(webapp2.RequestHandler):
 
-    def write(self, *args, **kwargs):
+    def _write(self, *args, **kwargs):
         self.response.out.write(*args, **kwargs)
 
-    def render_str(self, template, **params):
+    def _render_str(self, template, **params):
         t = jinja_env.get_template(template)
         return t.render(params)
 
     def render(self, template, **kwargs):
-        self.write(self.render_str(template, **kwargs))
+        self._write(self._render_str(template, **kwargs))
 
 class SubmitNewEntry(Handler):
     def render_submit(self, **kwargs):
@@ -53,21 +50,38 @@ class SubmitNewEntry(Handler):
 
 class WikiPage(Handler):
     def render_wiki_page(self, **kwargs):
-        self.render("blog.html", **kwargs)
+        self.render("wiki.html", **kwargs)
 
     def get(self, pagename):
-        # get the page by pagename
-        page = WikiEntry.get_by_id(pagename)
+        # get the page by pagename, if it does not exist, redirect to create
+        # page.
+        # Write the GqlQuery.
+        if not pagename:
+            pagename = "/";
+        page = db.GqlQuery("SELECT * FROM WikiEntry WHERE title = %s" % pagename)
+        if page == None:
+            redirect_page = "/_edit/%s" % pagename
+            self.redirect(redirect_page)
         self.render_wiki_page(page=page.content)
 
 class EditPage(Handler):
     def render_wiki_page(self, **kwargs):
-        self.render("editblog.html", **kwargs)
+        self.render("edit.html", **kwargs)
 
-    def get(self, pagename):
+    def post(self):
+        title = self.request.get("title")
+        content = self.request.get("content")
+        page = db.GqlQuery("SELECT * FROM WikiEntry WHERE title= %s;" % title)
+        page.content = content
+        page.put()
+        self.redirect("/%s" % title)
+
+
+    def get(self, editpage):
         # edit this page.
-        pass
-
+        pagename = editpage.rsplit('/')[-1]
+        page = db.GqlQuery("SELECT * FROM WikiEntry WHERE title = %s" % pagename)
+        self.render_wiki_page(content=page.content)
 
 def verify_username(username):
     USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
@@ -80,6 +94,7 @@ def verify_password(password):
 def verify_email(email):
     USER_EMAIL = re.compile(r"^[\S]+@[\S]+\.[\S]+$")
     return USER_EMAIL.match(email)
+
 
 class Signup(Handler):
 
@@ -148,14 +163,6 @@ class Signup(Handler):
                             username_error=username_error,
                             username=username)
 
-class WelcomeHandler(webapp2.RequestHandler):
-
-    def get(self):
-        username = self.request.cookies.get("userid")
-        username = username.split(',')[0]
-        output = "Welcome, %s" % username
-        self.response.out.write(output)
-
 class Login(Handler):
 
     def write_form(self, login_error="",
@@ -203,6 +210,7 @@ class Logout(Handler):
         redirect_url = "/signup"
         self.redirect(redirect_url)
 
+
 PAGE_RE = r'(/(?:[a-zA-Z0-9_-]+/?)*)'
 
 app = webapp2.WSGIApplication([('/signup', Signup),
@@ -211,5 +219,4 @@ app = webapp2.WSGIApplication([('/signup', Signup),
                                ('/_edit' + PAGE_RE, EditPage),
                                (PAGE_RE, WikiPage),
                                ('/newpost', SubmitNewEntry),
-                              ('/welcome', WelcomeHandler),
                                ], debug=True)
