@@ -1,27 +1,10 @@
 <!DOCTYPE HTML>
 <html>
-        <title>Form</title>
+<title>Edit {{title}}</title>
     <body>
-        <form method="post" action="/signup">
+    <form method="post" action="/_edit/{{title}}">
         <label>
-        Name:
-        <input type="text" name="username" value="{{username}}">
-        <div style="color: red">{{username}}</div>
-        </label>
-        <label>
-        Password:
-        <input type="password" name="password" value="">
-        <div style="color: red">{{password_error}}</div>
-        </label>
-        <label>
-        Verify Password:
-        <input type="password" name="verify" value="">
-        <div style="color: red">{{verify_password_error}}</div>
-        </label>
-        <label>
-        Email:
-        <input type="text" name="email" value="{{email}}">
-        <div style="color: red">{{email_error}}</div>
+        <input type="textarea" name="content" value="{{content}}">
         </label>
         <input type="submit">
         </form>
