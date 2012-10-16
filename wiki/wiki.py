@@ -57,13 +57,15 @@ class WikiPage(Handler):
         # page.
 
         pagename = pagename.rsplit('/')[-1]
+        if not pagename:
+            pagename = 'index'
         page = db.GqlQuery(r"SELECT * FROM WikiEntry WHERE title=:1 limit 1;", pagename).get()
 
         if page is None:
             redirect_page = "/_edit/%s" % pagename
             self.redirect(redirect_page)
         else:
-            self.render_wiki_page(page=page.content)
+            self.render_wiki_page(content=page.content)
 
 class EditPage(Handler):
     def render_wiki_page(self, **kwargs):
@@ -88,9 +90,11 @@ class EditPage(Handler):
     def get(self, editpage):
         # edit this page.
         pagename = editpage.rsplit('/')[-1]
-        import pdb; pdb.set_trace()
-        #page = db.GqlQuery("SELECT * FROM WikiEntry WHERE title = %s" % pagename)
-        self.render_wiki_page(content="", title=pagename)
+        page = db.GqlQuery("SELECT * FROM WikiEntry WHERE title=:1 limit 1;", pagename).get()
+        if not page:
+            self.render_wiki_page(content="", title=pagename)
+        else:
+            self.render_wiki_page(content=page.content, title=page.title)
 
 def verify_username(username):
     USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
