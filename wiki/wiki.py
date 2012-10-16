@@ -65,7 +65,7 @@ class WikiPage(Handler):
             redirect_page = "/_edit/%s" % pagename
             self.redirect(redirect_page)
         else:
-            self.render_wiki_page(content=page.content)
+            self.render_wiki_page(title=page.title, content=page.content)
 
 class EditPage(Handler):
     def render_wiki_page(self, **kwargs):
@@ -75,7 +75,7 @@ class EditPage(Handler):
         title = self.request.get("title")
         content = self.request.get("content")
         if not title:
-            title='/';
+            title='index';
         page = db.GqlQuery("SELECT * FROM WikiEntry WHERE title=:1 limit 1;", title).get()
         if not page:
             page = WikiEntry(title=title, content=content)
@@ -90,6 +90,8 @@ class EditPage(Handler):
     def get(self, editpage):
         # edit this page.
         pagename = editpage.rsplit('/')[-1]
+        if not pagename:
+            pagename = 'index'
         page = db.GqlQuery("SELECT * FROM WikiEntry WHERE title=:1 limit 1;", pagename).get()
         if not page:
             self.render_wiki_page(content="", title=pagename)
