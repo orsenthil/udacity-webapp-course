@@ -55,33 +55,42 @@ class WikiPage(Handler):
     def get(self, pagename):
         # get the page by pagename, if it does not exist, redirect to create
         # page.
-        # Write the GqlQuery.
-        if not pagename:
-            pagename = "/";
-        page = db.GqlQuery("SELECT * FROM WikiEntry WHERE title = %s" % pagename)
-        if page == None:
+
+        pagename = pagename.rsplit('/')[-1]
+        page = db.GqlQuery(r"SELECT * FROM WikiEntry WHERE title=:1 limit 1;", pagename).get()
+
+        if page is None:
             redirect_page = "/_edit/%s" % pagename
             self.redirect(redirect_page)
-        self.render_wiki_page(page=page.content)
+        else:
+            self.render_wiki_page(page=page.content)
 
 class EditPage(Handler):
     def render_wiki_page(self, **kwargs):
         self.render("edit.html", **kwargs)
 
-    def post(self):
+    def post(self, *args, **kwargs):
         title = self.request.get("title")
         content = self.request.get("content")
-        page = db.GqlQuery("SELECT * FROM WikiEntry WHERE title= %s;" % title)
-        page.content = content
-        page.put()
+        if not title:
+            title='/';
+        page = db.GqlQuery("SELECT * FROM WikiEntry WHERE title=:1 limit 1;", title).get()
+        if not page:
+            page = WikiEntry(title=title, content=content)
+            page.put()
+        else:
+            page.title = title
+            page.content = content
+            page.put()
         self.redirect("/%s" % title)
 
 
     def get(self, editpage):
         # edit this page.
         pagename = editpage.rsplit('/')[-1]
-        page = db.GqlQuery("SELECT * FROM WikiEntry WHERE title = %s" % pagename)
-        self.render_wiki_page(content=page.content)
+        import pdb; pdb.set_trace()
+        #page = db.GqlQuery("SELECT * FROM WikiEntry WHERE title = %s" % pagename)
+        self.render_wiki_page(content="", title=pagename)
 
 def verify_username(username):
     USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")

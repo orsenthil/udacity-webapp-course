@@ -75,5 +75,5 @@ running on multiple memcached machines.
 Building a Wiki
 ---------------
 
-
-
+WikiEntry class.
+Takes a class to retreive a page and submit a page.

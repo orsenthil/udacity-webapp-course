@@ -4,7 +4,10 @@
     <body>
     <form method="post" action="/_edit/{{title}}">
         <label>
-        <input type="textarea" name="content" value="{{content}}">
+            <input type="hidden" name="title" value="{{title}}">
+        </label>
+        <label>
+            <input type="textarea" name="content" value="{{content}}">
         </label>
         <input type="submit">
         </form>
