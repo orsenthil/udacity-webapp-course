@@ -1,6 +1,58 @@
 <!DOCTYPE HTML>
 <html>
+<head>
 <title>Edit {{title}}</title>
+</head>
+<style type="text/css">
+    body {
+    font-family: sans-serif;
+    width: 800px;
+    margin: 0 auto;
+    padding: 10px;
+    }
+    .error {
+        color: red;
+    }
+    label {
+        display: block;
+        font-size: 20px;
+    }
+    input[type="text"] {
+        width: 400px;
+        font-size: 20px;
+        padding: 2px;
+    }
+    textarea {
+        width: 600px;
+        height: 400px;
+        font-size: 17px;
+        font-family: monospace;
+    }
+    input [type="submit"]{
+        font-size: 24px;
+    }
+    hr {
+        margin: 20px auto;
+    }
+    .blogpost + .blogpost {
+        margin-top: 20px;
+    }
+    .blog-topic {
+        font-weight: bolder;
+        font-size: 24px;
+        margin-top: 10px;
+        margin-bottom: 30px;
+    }
+    .blog-post {
+        margin: 0;
+        font-size: 22px;
+    }
+    .blog-permalink {
+        font-size: small;
+    }
+
+</style>
+
     <body>
     <form method="post" action="/_edit/{{title}}">
         <label>
@@ -9,6 +61,7 @@
         <label>
             <input type="textarea" name="content" value="{{content}}">
         </label>
+        <br/>
         <input type="submit">
         </form>
     </body>
