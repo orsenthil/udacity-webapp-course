@@ -77,3 +77,8 @@ Building a Wiki
 
 WikiEntry class.
 Takes a class to retreive a page and submit a page.
+
+Update to wiki
+--------------
+
+* Use of Referer header may be desired.

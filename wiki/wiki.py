@@ -201,7 +201,7 @@ class Login(Handler):
             usercookie = 'userid=%s,%s' %(username, password)
             usercookie = usercookie.encode('utf-8')
             self.response.headers.add_header('Set-Cookie', usercookie, Path='/')
-            redirect_url = "/welcome"
+            redirect_url = "/{{title}}"
             self.redirect(redirect_url)
 
         else:
@@ -222,7 +222,7 @@ class Logout(Handler):
         usercookie = 'userid='
         usercookie = usercookie.encode('utf-8')
         self.response.headers.add_header('Set-Cookie', usercookie, Path='/')
-        redirect_url = "/signup"
+        redirect_url = "/"
         self.redirect(redirect_url)
 
 
