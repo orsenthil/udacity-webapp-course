@@ -43,7 +43,7 @@ class SubmitNewEntry(Handler):
         if title and content:
             b = WikiEntry(title=title, content=content)
             b.put()
-            self.redirect("/")
+            self.redirect("/%s" % title)
         else:
             error = "Please provide title and post"
             self.render_submit(title=title, content=content, error=error)
@@ -181,27 +181,32 @@ class Signup(Handler):
 class Login(Handler):
 
     def write_form(self, login_error="",
-                         username=""):
+                         username="",
+                         referer=""):
 
         form_contents = {'login_error': login_error,
-                         'username': username
+                         'username': username,
+                         'referer': referer
                         }
         self.render('login.html', **form_contents)
 
     def get(self):
-        self.write_form(login_error="", username="")
+        referer = self.request.headers.get('Referer')
+        referer = referer.rsplit('/')[-1] # just the path
+        self.write_form(login_error="", username="", referer=referer)
 
     def post(self):
         username = self.request.get('username')
         username = cgi.escape(username)
         password = self.request.get('password')
+        referer = self.request.get('referer')
 
         if (verify_username(username) and verify_password(password)):
             password = hashlib.sha256(password + 'salt').hexdigest()
             usercookie = 'userid=%s,%s' %(username, password)
             usercookie = usercookie.encode('utf-8')
             self.response.headers.add_header('Set-Cookie', usercookie, Path='/')
-            redirect_url = "/{{title}}"
+            redirect_url = "/%s" % referer
             self.redirect(redirect_url)
 
         else:
