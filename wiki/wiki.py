@@ -85,7 +85,8 @@ class EditPage(Handler):
         self.render("edit.html", **kwargs)
 
     def post(self, *args, **kwargs):
-        title = self.request.get("title")
+        requesturl = self.request.url
+        title = requesturl.rsplit('/')[-1]
         content = self.request.get("content")
         if not title:
             title='index';
