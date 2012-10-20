@@ -56,13 +56,16 @@
 
     <body>
         <div>
+            {%if loggedin %}
+            <a href="/_edit/{{title}}">Edit</a>
+            {% else %}
             <a href="/signup">Signup</a>
             <a href="/login">Signin</a>
-            <a href="/_edit/{{title}}">Edit</a>
+            {%endif %}
         </div>
         <div class="blog-topic">{{title}}</div>
         <div class="blog-post">{{content}}</div>
         <hr/>
-        <a href="/">Return to Front</a>
+        <a href="/">Go Home</a>
     </body>
 </html>

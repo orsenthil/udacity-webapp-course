@@ -54,18 +54,31 @@ class WikiPage(Handler):
 
     def get(self, pagename):
         # get the page by pagename, if it does not exist, redirect to create
-        # page.
+        # page
 
         pagename = pagename.rsplit('/')[-1]
         if not pagename:
             pagename = 'index'
         page = db.GqlQuery(r"SELECT * FROM WikiEntry WHERE title=:1 limit 1;", pagename).get()
 
+        userid_cookie = self.request.cookies.get('userid')
+
+        if userid_cookie:
+            loggedin = True
+        else:
+            loggedin = False
+
         if page is None:
-            redirect_page = "/_edit/%s" % pagename
+            # verify login. If logged in, redirect to edit. Otherwise. Prompt
+            # to login and redirect to edit.
+            userid_cookie = self.request.cookies.get('userid')
+            if userid_cookie:
+                redirect_page = "/_edit/%s" % pagename
+            else:
+                redirect_page = '/login'
             self.redirect(redirect_page)
         else:
-            self.render_wiki_page(title=page.title, content=page.content)
+            self.render_wiki_page(title=page.title, content=page.content, loggedin=loggedin)
 
 class EditPage(Handler):
     def render_wiki_page(self, **kwargs):
@@ -192,7 +205,10 @@ class Login(Handler):
 
     def get(self):
         referer = self.request.headers.get('Referer')
-        referer = referer.rsplit('/')[-1] # just the path
+        if referer:
+            referer = referer.rsplit('/')[-1] # just the path
+        else:
+            referer = ''
         self.write_form(login_error="", username="", referer=referer)
 
     def post(self):
