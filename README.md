@@ -39,14 +39,6 @@ Ascii Chan
 * http://3.bloglikeapp.appspot.com
 
 
-- - -
-
-Certificate
------------
-
-![Certificate](https://raw.github.com/uthcode/udacity-webapp-course/master/Udacity_Webapp_certificate.jpg)
-
-
 Changelog
 ---------
 
@@ -69,3 +61,13 @@ Changelog
 
 * Ascii Chan
 
+
+- - -
+
+Certificate upon Course Completion
+----------------------------------
+
+And if you complete the course. You would get the certificate like this.
+  
+
+![Certificate](https://raw.github.com/uthcode/udacity-webapp-course/master/Udacity_Webapp_certificate.jpg)
