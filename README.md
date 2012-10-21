@@ -27,6 +27,10 @@ App URLS
 * http://5.bloglikeapp.appspot.com 
 * http://6.bloglikeapp.appspot.com 
 * http://7.bloglikeapp.appspot.com 
+* http://8.bloglikeapp.appspot.com
+* http://9.bloglikeapp.appspot.com
+* http://10.bloglikeapp.appspot.com
+
 
 
 Ascii Chan
@@ -39,6 +43,12 @@ Ascii Chan
 
 Changelog
 ---------
+
+
+*Sat Oct 20 19:15:15 PDT 2012*
+
+* Completed!
+
 
 *Tue Oct  2 21:27:57 PDT 2012*
 
