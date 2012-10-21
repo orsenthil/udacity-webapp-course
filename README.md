@@ -44,7 +44,8 @@ Ascii Chan
 Certificate
 -----------
 
-!Udacity_Webapp_certificate.jpg!
+![Certificate](https://raw.github.com/uthcode/udacity-webapp-course/master/Udacity_Webapp_certificate.jpg)
+
 
 Changelog
 ---------
