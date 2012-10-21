@@ -41,6 +41,11 @@ Ascii Chan
 
 - - -
 
+Certificate
+-----------
+
+!Udacity_Webapp_certificate.jpg!
+
 Changelog
 ---------
 
