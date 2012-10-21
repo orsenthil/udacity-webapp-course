@@ -9,7 +9,7 @@ from google.appengine.ext import db
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir),
-                              autoescape=True)
+                              autoescape=False)
 
 class WikiEntry(db.Model):
     title = db.StringProperty(required=True)
@@ -68,23 +68,8 @@ class WikiPage(Handler):
             pagename = 'index'
         allpages = db.GqlQuery(r"SELECT * FROM WikiEntry WHERE title=:1 ORDER BY created DESC;", pagename).fetch(limit=None)
 
-        totalpages = len(allpages)
-
-        if not revision:
-            revision = totalpages
-
-        page = allpages[totalpages - revision]
-
-        userid_cookie = self.request.cookies.get('userid')
-
-        if userid_cookie:
-            loggedin = True
-        else:
-            loggedin = False
-
-        if page is None:
-            # verify login. If logged in, redirect to edit. Otherwise. Prompt
-            # to login and redirect to edit.
+        if not allpages:
+            # The page is not yet created.
             userid_cookie = self.request.cookies.get('userid')
             if userid_cookie:
                 redirect_page = "/_edit/%s" % pagename
@@ -92,6 +77,21 @@ class WikiPage(Handler):
                 redirect_page = '/login'
             self.redirect(redirect_page)
         else:
+            totalpages = len(allpages)
+
+            if not revision:
+                revision = totalpages
+
+            page = allpages[totalpages - revision]
+
+            userid_cookie = self.request.cookies.get('userid')
+
+            if userid_cookie:
+                loggedin = True
+            else:
+                loggedin = False
+
+            userid_cookie = self.request.cookies.get('userid')
             self.render_wiki_page(title=page.title, content=page.content, loggedin=loggedin, editrevision=editrevision)
 
 class EditPage(Handler):
