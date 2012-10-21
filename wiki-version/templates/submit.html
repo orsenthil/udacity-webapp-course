@@ -1,0 +1,70 @@
+<!DOCTYPE HTML 1.1>
+<html>
+    <head>
+        <title>Submit Post</title>
+    </head>
+    <style type="text/css">
+        body {
+        font-family: sans-serif;
+        width: 800px;
+        margin: 0 auto;
+        padding: 10px;
+        }
+        .error {
+            color: red;
+        }
+        label {
+            display: block;
+            font-size: 20px;
+        }
+        input[type="text"] {
+            width: 400px;
+            font-size: 20px;
+            padding: 2px;
+        }
+        textarea {
+            width: 600px;
+            height: 400px;
+            font-size: 17px;
+            font-family: monospace;
+        }
+        input [type="submit"]{
+            font-size: 24px;
+        }
+        hr {
+            margin: 20px auto;
+        }
+        .blogpost + .blogpost {
+            margin-top: 20px;
+        }
+        .blog-topic {
+            font-weight: bolder;
+            font-size: 24px;
+        }
+        .blog-post {
+            margin: 0;
+            font-size: 17px;
+        }
+        .blog-permalink {
+            font-size: small;
+        }
+
+    </style>
+
+
+    <body>
+        <h1> What are you thinking?</h1>
+        <form method="POST" action="/newpost">
+            <label>
+                <div>Topic</title>
+                <input type="text" name="subject" value="{{topic}}" />
+            </label>
+            <label>
+                <div>Post</div>
+                <textarea name="content">{{post}}</textarea>
+            </label>
+            <div class="error">{{error}}</div>
+            <input type="SUBMIT"/>
+        </form>
+    </body>
+</html>

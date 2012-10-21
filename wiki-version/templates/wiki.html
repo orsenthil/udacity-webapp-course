@@ -1,0 +1,78 @@
+<!DOCTYPE HTML 1.1>
+<html>
+    <head>
+        <title>{{title}}</title>
+    </head>
+
+    <style type="text/css">
+        body {
+        font-family: sans-serif;
+        width: 800px;
+        margin: 0 auto;
+        padding: 10px;
+        }
+        .error {
+            color: red;
+        }
+        label {
+            display: block;
+            font-size: 20px;
+        }
+        input[type="text"] {
+            width: 400px;
+            font-size: 20px;
+            padding: 2px;
+        }
+        textarea {
+            width: 600px;
+            height: 400px;
+            font-size: 17px;
+            font-family: monospace;
+        }
+        input [type="submit"]{
+            font-size: 24px;
+        }
+        hr {
+            margin: 20px auto;
+        }
+        .blogpost + .blogpost {
+            margin-top: 20px;
+        }
+        .blog-topic {
+            font-weight: bolder;
+            font-size: 24px;
+            margin-top: 10px;
+            margin-bottom: 30px;
+        }
+        .blog-post {
+            margin: 0;
+            font-size: 22px;
+        }
+        .blog-permalink {
+            font-size: small;
+        }
+
+    </style>
+
+    <body>
+        <div>
+            {%if loggedin %}
+                {% if editrevision %}
+                    <a href="/_edit/{{title}}?v={{editrevision}}">Edit</a>
+                {% else %}
+                    <a href="/_edit/{{title}}">Edit</a>
+                {% endif %}
+
+                <a href="/_history/{{title}}">History</a>
+
+            {% else %}
+                <a href="/signup">Signup</a>
+                <a href="/login">Signin</a>
+            {%endif %}
+        </div>
+        <div class="blog-topic">{{title}}</div>
+        <div class="blog-post">{{content}}</div>
+        <hr/>
+        <a href="/">Go Home</a>
+    </body>
+</html>
