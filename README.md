@@ -67,7 +67,7 @@ Changelog
 Certificate upon Course Completion
 ----------------------------------
 
-And if you complete the course. You would get the certificate like this.
+And if you complete the course. You will get the certificate like this.
   
 
 ![Certificate](https://raw.github.com/uthcode/udacity-webapp-course/master/Udacity_Webapp_certificate.jpg)
