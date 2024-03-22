@@ -71,3 +71,25 @@ And if you complete the course. You will get the certificate like this.
   
 
 ![Certificate](https://raw.github.com/uthcode/udacity-webapp-course/master/Udacity_Webapp_certificate.jpg)
+
+
+
+---- 
+
+Meeting Steve Huffman at Hipmunk Office.
+
+
+![IMAG0760](https://github.com/orsenthil/udacity-webapp-course/assets/332330/219f5462-2bc5-47b0-89e0-bf7b0861d7ce)
+
+
+![IMAG0757](https://github.com/orsenthil/udacity-webapp-course/assets/332330/9902a0a1-c618-4231-b052-72eb85305290)
+
+Online meeting with Udacity Founder, Sebastian Thurn.
+
+![IMAG0758](https://github.com/orsenthil/udacity-webapp-course/assets/332330/c4c6bdee-247f-447d-991f-b2d8bc4e0434)
+
+
+---
+
+* March 21, 2024 - Congrats to Reddit, founded by Steve Huffman et al on their IPO.
+
